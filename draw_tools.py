@@ -4,13 +4,42 @@ import sys
 import time
 
 import globals
+from animations.blink_animation import sleep
+from constants import HEART, STATUS_BAR_HEIGHT
 from curses_tools import draw_frame, get_frame_size
+from game_scenario import PHRASES
 
 
 def initial_prepare_canvas(canvas):
     curses.curs_set(False)
     canvas.border()
     canvas.nodelay(True)
+
+
+def create_status_bar(canvas):
+    max_y, max_x = curses.window.getmaxyx(canvas)
+    return canvas.derwin(STATUS_BAR_HEIGHT, max_x, max_y - STATUS_BAR_HEIGHT, 0)
+
+
+async def status_bar_refresh(status_bar, canvas):
+    status_bar.border()
+    _, max_x = curses.window.getmaxyx(status_bar)
+    score = f'SCORE: {globals.destroyed_obstacles}'
+    year = f'YEAR: {globals.YEAR}'
+    if globals.YEAR in PHRASES:
+        year += f' - {PHRASES[globals.YEAR]}'
+    life = f'LIFE: {(HEART + " ") * globals.LIFE}'
+    indicators = f'{score}     {life}     {year}'
+    whitespace = (max_x - len(indicators) - 2) * ' '
+    status_bar.addstr(1, 1, f'{indicators}{whitespace}', curses.A_BOLD)
+    status_bar.overlay(canvas)
+    status_bar.refresh()
+
+
+async def status_bar_draw(status_bar, canvas):
+    while True:
+        globals.coroutines.append(status_bar_refresh(status_bar, canvas))
+        await sleep(1)
 
 
 def close_draw(canvas):

@@ -4,6 +4,7 @@ from itertools import cycle
 
 import globals
 from animations.fire_animation import fire
+from constants import STATUS_BAR_HEIGHT
 from curses_tools import draw_frame, get_frame_size, read_controls
 from draw_tools import show_gameover
 from explosion import explode
@@ -36,8 +37,8 @@ async def animate_spaceship(canvas, max_y, max_x, frames, speed=1):
             column += column_speed
             if row < 1:
                 row = 1
-            elif row > max_y - 1 - size[0]:
-                row = max_y - 1 - size[0]
+            elif row > max_y - size[0] - STATUS_BAR_HEIGHT:
+                row = max_y - size[0] - STATUS_BAR_HEIGHT
             if column < 1:
                 column = 1
             elif column > max_x - 1 - size[1]:
@@ -49,4 +50,8 @@ async def animate_spaceship(canvas, max_y, max_x, frames, speed=1):
             for obs in globals.obstacles:
                 if box.has_collision(obs.row, obs.column, obs.rows_size, obs.columns_size):
                     await explode(canvas, row + size[0] // 2, column + size[1] // 2)
-                    curses.wrapper(show_gameover)
+                    if globals.LIFE > 1:
+                        globals.obstacles_in_last_collisions.append(obs)
+                        globals.LIFE -= 1
+                    else:
+                        curses.wrapper(show_gameover)

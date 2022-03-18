@@ -7,8 +7,11 @@ import time
 import globals
 from animations import animate_spaceship, blink, sleep
 from constants import (NUMBER_OF_STARS, PATH_TO_GARBAGE_FRAMES,
-                       PATH_TO_ROCKET_FRAMES, SPEED, STARS, TIC_TIMEOUT)
-from draw_tools import close_draw, initial_prepare_canvas
+                       PATH_TO_ROCKET_FRAMES, SPEED, STARS, STATUS_BAR_HEIGHT,
+                       TIC_TIMEOUT)
+from draw_tools import (close_draw, create_status_bar, initial_prepare_canvas,
+                        status_bar_draw)
+from game_scenario import get_garbage_delay_tics
 # from obstacles import show_obstacles
 from space_garbage import fly_garbage
 
@@ -23,28 +26,43 @@ def get_frames(filepath):
     return frames
 
 
+async def time_counter():
+    while True:
+        end = time.time()
+        if end - globals.start_time > 1.5:
+            globals.YEAR += 1
+            globals.start_time = end
+        await sleep(1)
+
+
 async def fill_orbit_with_garbage(canvas, max_lenght, frames):
     length = len(frames)
     while True:
-        globals.coroutines.append(
-            fly_garbage(
-                canvas,
-                random.randint(0, max_lenght),
-                frames[random.randint(0, length - 1)]
+        tic = get_garbage_delay_tics(globals.YEAR)
+        if tic is not None:
+            globals.coroutines.append(
+                fly_garbage(
+                    canvas,
+                    random.randint(0, max_lenght),
+                    frames[random.randint(0, length - 1)]
+                )
             )
-        )
-        await sleep(random.randint(1, 20))
+            await sleep(tic)
+        else:
+            await sleep(1)
 
 
 def draw(canvas):
     initial_prepare_canvas(canvas)
     max_y, max_x = curses.window.getmaxyx(canvas)
-    for i in range(NUMBER_OF_STARS):
+    status_bar = create_status_bar(canvas)
+    globals.coroutines.append(status_bar_draw(status_bar, canvas))
+    for _ in range(NUMBER_OF_STARS):
         globals.coroutines.append(
             blink(
                 canvas,
-                random.randint(1, max_y - 2),
-                random.randint(1, max_x - 2),
+                random.randint(1, max_y - STATUS_BAR_HEIGHT - 1),
+                random.randint(1, max_x - 1),
                 random.choice(STARS)
             )
         )
@@ -57,6 +75,7 @@ def draw(canvas):
             canvas, max_x - 1, get_frames(PATH_TO_GARBAGE_FRAMES)
         )
     )
+    globals.coroutines.append(time_counter())
     # globals.coroutines.append(show_obstacles(canvas, globals.obstacles))
     while True:
         for coroutine in globals.coroutines.copy():
