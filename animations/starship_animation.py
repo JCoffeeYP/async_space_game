@@ -45,7 +45,7 @@ async def animate_spaceship(canvas, max_y, max_x, frames, speed=1):
                 column = max_x - 1 - size[1]
             box.row = row
             box.column = column
-            if space_pressed:
+            if space_pressed and globals.YEAR >= 2020:
                 globals.coroutines.append(fire(canvas, row, column + size[1] // 2))
             for obs in globals.obstacles:
                 if box.has_collision(obs.row, obs.column, obs.rows_size, obs.columns_size):
