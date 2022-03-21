@@ -14,10 +14,10 @@ async def fire(canvas,
 
     row, column = start_row, start_column
 
-    canvas.addstr(round(row), round(column), '*')
+    canvas.addstr(round(row), round(column), '*', curses.color_pair(3))
     await asyncio.sleep(0)
 
-    canvas.addstr(round(row), round(column), 'O')
+    canvas.addstr(round(row), round(column), 'O', curses.color_pair(1))
     await asyncio.sleep(0)
     canvas.addstr(round(row), round(column), ' ')
 
@@ -33,7 +33,7 @@ async def fire(canvas,
     box = Obstacle(row, column)
 
     while 0 < row < max_row and 0 < column < max_column:
-        canvas.addstr(round(row), round(column), symbol)
+        canvas.addstr(round(row), round(column), symbol, curses.color_pair(2))
         await asyncio.sleep(0)
         canvas.addstr(round(row), round(column), ' ')
         row += rows_speed

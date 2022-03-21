@@ -38,7 +38,7 @@ async def explode(canvas, center_row, center_column):
     curses.beep()
     for frame in EXPLOSION_FRAMES:
 
-        draw_frame(canvas, corner_row, corner_column, frame)
+        draw_frame(canvas, corner_row, corner_column, frame, color=1)
 
         await asyncio.sleep(0)
         draw_frame(canvas, corner_row, corner_column, frame, negative=True)

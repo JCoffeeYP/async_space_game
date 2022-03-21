@@ -52,7 +52,7 @@ def close_draw(canvas):
     row = max_y
     while row > round(max_y / 2) - size[0] // 2:
         draw_frame(
-            canvas, row, round(max_x / 2) - size[1] // 2, good_bye_frame
+            canvas, row, round(max_x / 2) - size[1] // 2, good_bye_frame, color=3
         )
         canvas.border()
         canvas.refresh()
@@ -64,7 +64,7 @@ def close_draw(canvas):
         if row + size[0] + 1 == max_y:
             canvas.border()
     phrase = f'YOU HAVE DESTROYED {globals.destroyed_obstacles} SPACE TRASH'
-    draw_frame(canvas, row, round(max_x / 2) - size[1] // 2, good_bye_frame)
+    draw_frame(canvas, row, round(max_x / 2) - size[1] // 2, good_bye_frame, color=3)
     canvas.addstr(
         round(max_y / 2) + size[0], round(max_x / 2) - len(phrase) // 2, phrase, curses.A_DIM
     )
@@ -82,7 +82,7 @@ def show_gameover(canvas):
     row = max_y
     while row > round(max_y / 2) - size[0] // 2:
         draw_frame(
-            canvas, row, round(max_x / 2) - size[1] // 2, game_over_frame
+            canvas, row, round(max_x / 2) - size[1] // 2, game_over_frame, color=3
         )
         canvas.border()
         canvas.refresh()
@@ -94,7 +94,7 @@ def show_gameover(canvas):
         if row + size[0] + 1 == max_y:
             canvas.border()
     phrase = f'YOU HAVE DESTROYED {globals.destroyed_obstacles} SPACE TRASH'
-    draw_frame(canvas, row, round(max_x / 2) - size[1] // 2, game_over_frame)
+    draw_frame(canvas, row, round(max_x / 2) - size[1] // 2, game_over_frame, color=3)
     canvas.addstr(
         round(max_y / 2) + size[0], round(max_x / 2) - len(phrase) // 2, phrase, curses.A_DIM
     )

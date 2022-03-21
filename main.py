@@ -90,6 +90,11 @@ def draw(canvas):
 
 if __name__ == '__main__':
     globals.initialize()
+    stdscr = curses.initscr()
+    curses.start_color()
+    curses.init_pair(1, curses.COLOR_RED, curses.COLOR_YELLOW)
+    curses.init_pair(2, curses.COLOR_GREEN, curses.COLOR_BLACK)
+    curses.init_pair(3, curses.COLOR_YELLOW, curses.COLOR_BLACK)
     try:
         curses.update_lines_cols()
         curses.wrapper(draw)
